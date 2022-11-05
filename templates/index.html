@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+ 
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
+<script>
+   function parstags(string){
+      string = string.replace(/@(\w+)/gi, '<a class="wait" href="/?@=$1" target="_top">@$1</a>');
+      string = string.replace(/#([a-zA-Z]\w+)/gi, '<a class="wait" href="/?H=$1" target="_top">#$1</a>');
+      return string;
+   }
+</script>
+{% endblock %}
+
+{% block body %}
+<script>
+   if (window.ethereum) {
+      web3 = new Web3(new Web3.providers.WebsocketProvider('{{ config["BLOCKCHAIN_WS_URL"] }}'));
+
+      // Set Contract Abi
+      var contractAbi = [{ "anonymous": false, "inputs": [ { "indexed": true, "internalType": "address", "name": "account", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "stake", "type": "uint256" } ], "name": "Update", "type": "event" }];
+  
+      // Set the Contract
+      var contractAddress = '{{ config["CONTRACT_ADDRESS"] }}'; 
+      var contract = new web3.eth.Contract(contractAbi,contractAddress);
+
+      let options = {filter: {account: '{{ wallet.address }}'}, fromBlock: 'latest' };
+      contract.events.Update(options).on('data', event => UpdateBalance(event));
+   } else {
+      console.log("No wallet");
+   }
+
+   function UpdateBalance(event)
+    {
+      // console.log(event);
+      var fieldElement = document.getElementById('balance');
+      fieldElement.innerHTML = `TBYP ${(event.returnValues.amount/10**6).toFixed(1)} (${(event.returnValues.stake/10**6).toFixed(1)})`;
+    }
+</script>
+
+<!-- sidebar starts -->
+{% set profile_list = list_user_profiles() %}
+{% include 'menu.html' %}
+<!-- sidebar ends -->
+
+<!-- feed starts -->
+<div class="feed">
+   {% if user  %}
+      {% if post  %}
+         <div class="feed__header">
+            <h2>Post</h2>
+         </div>
+         <div class="feed__replyto">
+            {% with feed = post %}
+               {% include 'feed.html' %}
+            {% endwith %}
+         </div>
+         <div class="feed__reply">
+            {% set reply = post[0].id %}
+            {% include 'input.html' %}
+            {% set feed = thread(reply) %}
+            {% include 'feed.html' %}
+         </div>
+      {% elif profile  %}
+         <div class="feed__header">
+            <h2>{{ profile.name }}<h2>
+            @{{ profile.handle }}
+            {% if user  %}
+               {% if user.is_followed(profile.id) %}
+                  <a class="follow wait" href="/unfollow/{{ profile.id }}">unfollow</a>
+               {% else %}
+                  <a class="follow wait" href="/follow/{{ profile.id }}">follow</a>
+               {% endif %}     
+               {% if user.profileid == profile.id%}
+                  <a class="follow" style="margin-right: 5px;" href="/edit/{{ user.profileid }}">edit</a>
+               {% endif %}     
+            {% endif %}     
+         </div>
+         {% set feed = feed(profile.id) %}
+         {% include 'feed.html' %}
+         <!-- <embed width="100%" height="100%" src="feed?profile={{ profile.id }}"/> -->
+      {% elif hashtag %}
+         <div class="feed__header">
+            <h2>#{{ hashtag.hashtag }}</h2>
+         </div>
+         {% set feed = forum(hashtag.id) %}
+         {% include 'feed.html' %}
+      {% else %}
+         <div class="feed__header">
+            <h2>Home</h2>
+         </div>
+         {% include 'input.html' %}
+         {% set feed = feed() %}
+         {% include 'feed.html' %}
+      {% endif %}  
+   {% elif profile_list %}
+      <div class="feed__header">
+         <h2>Select Profile</h2>
+      </div>
+      <div class="list_elements">
+      {% for profile in profile_list %}
+         <a class="wait" href="?profile={{ profile.id }}">@{{ profile.handle }}</a>
+      {% endfor %}
+      </div>
+   {% else %}
+      <form action="/create">
+         <input class="postBox__postButton" type="submit" style="width: 200px" type="button" value="New Profile">
+      </form>
+   {% endif %}  
+</div>
+<!-- feed ends -->
+
+<!-- side starts -->
+{% include 'side.html' %}
+<!-- side ends -->
+
+{% endblock %}

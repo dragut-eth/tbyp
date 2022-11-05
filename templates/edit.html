@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="sidebar">
+	<a href="/" title="back"><span class="sidebarOption material-symbols-outlined"> arrow_back </span></a>
+</div>
+<div class="feed feed__header">
+	<h2>EDIT PROFILE</h2>
+	<a href="/delete/{{ profile.id }}" class="sidebarOption wait">delete</a>
+	<div class="postBox field__input">
+		<form action="/edit/{{ profile.id }}" method="POST">
+			Name: <input placeholder="Name" autocomplete="off" type="text" name="name" value="{{ profile.name }}"><br/>
+			Handle: <input placeholder="Handle" autocomplete="off" type="text" name="handle" value="{{ profile.handle }}"><br/>
+			<button class="postBox__postButton wait">Edit</button>
+		</form>
+	</div>
+</div>
+{% endblock %}

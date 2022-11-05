@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="sidebar">
+	<a href="/" title="back"><span class="sidebarOption material-symbols-outlined"> arrow_back </span></a>
+</div>
+<div class="feed feed__header">
+    {% if post %}
+        <h2>EDIT POST</h2>
+        {% set update = post.post %}
+        {% include 'input.html' %}
+    {% endif %}
+</div>
+{% endblock %}

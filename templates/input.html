@@ -1,0 +1,25 @@
+<!-- postbox starts -->
+<script>
+    function countChars(obj){
+      var maxLength = 255;
+      var strLength = obj.value.length;
+      
+      if(strLength > maxLength){
+         document.getElementById("charNum").innerHTML = '<span style="color: red;">'+strLength+' / '+maxLength+'</span>';
+      }else{
+         document.getElementById("charNum").innerHTML = strLength+' / '+maxLength;
+      }
+   }    
+</script>
+<div class="postBox">
+<form action="{% if update %}/update/{{ post.id }}{% elif reply %}/reply/{{ reply }}{% else %}/post{% endif %}" method="POST">
+    <div class="postbox__input">
+        <div class="default__avatar"></div>
+        <input type="text" placeholder="{% if reply %}Your reply{% else %}What's happening?{% endif %}" value="{{ update }}" onkeyup="countChars(this);" name="post"/>
+    </div>
+    <div class="postBox__Submit">
+        <span id="charNum" class="postBox__postCounter">0 / 255</span><button class="postBox__postButton wait">{% if update %}Edit{% elif reply %}Reply{% else %}Post{% endif %}</button>
+    </div>
+</form>
+</div>
+<!-- postbox ends -->

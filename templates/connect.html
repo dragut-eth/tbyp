@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<script>
+/* To connect using MetaMask */
+	async function connect(form) {
+	   if (window.ethereum) {
+		  await window.ethereum.request({ method: "eth_requestAccounts" });
+		  web3 = new Web3(window.ethereum);
+		  const account = web3.eth.accounts;
+		  var walletAddress = Web3.utils.toChecksumAddress(account.givenProvider.selectedAddress);
+		  console.log(`Wallet: ${walletAddress}`);
+		  signature = await web3.eth.personal.sign("{{ message }}", walletAddress, 'Not Sure');
+		  console.log(`Signature: ${signature}`);
+		  form.wallet.value = walletAddress;
+		  form.signature.value = signature;
+		  form.submit();
+		} else {
+		  console.log("No wallet");
+		  window.location.href="https://metamask.app.link/dapp/tbyp.herokuapp.com/";
+	   }
+	}
+</script>
+
+<form action="/connect" method="POST">
+	<input type="hidden" name="wallet">
+	<input type="hidden" name="signature">
+	<input class="postBox__postButton" style="width: 200px" type="button" value="Connect Wallet" onclick="connect(this.form);">
+</form>
+{% endblock %}

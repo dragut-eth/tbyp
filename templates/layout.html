@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TBYP </title>
+		{% block head %}{% endblock %}
+		<style>
+		.material-symbols-outlined{
+        	max-width: 50px;
+      	}
+		div#loading {
+			position: absolute;
+  			left: 50%;
+  			top: 50%;
+  			transform: translate(-50%, -50%);
+			width: 128px;
+			height: 128px;
+			z-index: 100000;
+			display: none;
+			background: url("{{ url_for('static', filename='loader.gif') }}") no-repeat;
+			background-size: 128px 128px;
+    	}
+		.flashes{
+			position: absolute;
+  			text-align: center;
+			border-bottom: 1px solid;
+			width : 100%;
+			padding: 20px;
+			z-index: 100000;
+			background-color: white;
+			bottom: 0px;
+  			left: 0px;
+		}
+		.error{
+			background-color: red;
+		}
+		</style>
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        <script type="text/javascript">
+            window.onload = function() {
+                var anchors = document.getElementsByClassName('wait');
+                for(var i = 0; i < anchors.length; i++) {
+                    var anchor = anchors[i];
+                    anchor.onclick = function() {
+                        document.getElementById("loading").style.display = "block";
+                    }
+                }
+            }
+    	</script>
+	</head>
+	<body>
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			<header>
+				  {% for category, message in messages %}
+					<div class="flashes {{ category }}">{{ message }}</div>
+			  	{% endfor %}
+			</header>
+			{% endif %}
+	  	{% endwith %}		
+		<div id="loading"></div>
+		{% block body %}{% endblock %}
+	</body>
+</html>

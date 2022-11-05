@@ -1,0 +1,82 @@
+{% if session.wallet %}
+<div class="sidebar">
+    <a href="/">
+      <div class="ethereum_logo"></div>
+      <div class="sidebarOption active">
+        <span class="material-symbols-outlined"> home </span>
+        <h2>Home</h2>
+      </div>
+    </a>
+
+    {% if user %}
+      <a href="/explorer" class="wait">
+        <div class="sidebarOption">
+          <span class="material-symbols-outlined"> search </span>
+          <h2>Explore</h2>
+        </div>
+      </a>
+
+      <div class="sidebarOption">
+        <span class="material-symbols-outlined"> notifications_none </span>
+        <h2>Notifications</h2>
+      </div>
+
+      <a href="/?@={{ user.handle }}" class="wait">
+        <div class="sidebarOption">
+          <span class="material-symbols-outlined"> person </span>
+          <h2>Profile</h2>
+        </div>
+      </a>  
+    {% endif %}
+
+    {% if wallet %}
+    <div id="switch_profile" class="dropdown-content">
+        {% for profile in profile_list %}
+            <a href="?profile={{ profile.id }}" class="wait">@{{ profile.handle }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <a href="#" onclick="switch_profile()">
+      <div class="sidebarOption" class="dropbtn">
+        <span class="material-symbols-outlined dropdwn"> autorenew </span>
+        <h2 class="dropdwn">Switch Profile</h2>
+      </div>
+    </a>
+
+    <a href="/create">
+        <div class="sidebarOption">
+            <span class="material-symbols-outlined"> person_add </span>
+            <h2>New Profile</h2>
+        </div>
+    </a>
+
+    <a href="/logout">
+      <div class="sidebarOption">
+        <span class="material-symbols-outlined"> logout </span>
+        <h2>Logout</h2>
+      </div>
+    </a>
+</div>
+
+<script>
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    function switch_profile() {
+      document.getElementById("switch_profile").classList.toggle("show");
+    }
+    
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropdwn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
+</script>
+{% endif %}    

@@ -1,0 +1,41 @@
+<!-- post starts -->
+<div class="post">
+    <div class="post__avatar">
+        <a href="/?@={{ post.handle }}" target="_top"><div class="default__avatar"></div></a>
+    </div>
+    <div class="post__body">
+        <div class="post__header">
+            <div class="post__headerText">
+                <h3>{{ post.name }} <span class="post__headerSpecial"><a href="/?@={{ post.handle }}" target="_top">@{{ post.handle }}</a> {{ post.date }}</span>
+                {% if post.status == 'lock' %}                           
+                    <span class="material-symbols-outlined feed_status post__lock"> lock </span>
+                {% endif %}
+                </h3>
+            </div>
+            <div class="post__link">
+                <a href="/?post={{ post.id }}"></a>
+                <p><script>document.write(parstags("{{ post.post }}"));</script></p>
+            </div>
+        </div>
+        <div class="post__footer">
+            {% if user.profileid ==  post.profileid %}
+                {{ post.yea }}<span class="material-symbols-outlined"> arrow_circle_up </span>&nbsp;&nbsp; {{ post.nay }}<span class="material-symbols-outlined"> arrow_circle_down </span>&nbsp;&nbsp; {{ post.replies }}<a href="/?post={{ post.id }}" title="reply"><span class="material-symbols-outlined active"> maps_ugc </span></a>
+                {% if post.status != 'lock' %}
+                    &nbsp;&nbsp; <a href="/update/{{ post.id }}" title="edit"><span class="material-symbols-outlined active"> build_circle </span></a>
+                {% endif %}
+                &nbsp;&nbsp; <a class="wait" href="/update/{{ post.id }}?delete=1" title="delete"><span class="material-symbols-outlined active"> cancel </span></a>
+            {% else %}
+                {% if post.status == 'lock' %}
+                    {{ post.yea }}<span class="material-symbols-outlined"> arrow_circle_up </span>&nbsp;&nbsp; {{ post.nay }}<span class="material-symbols-outlined"> arrow_circle_down </span>&nbsp;&nbsp; {{ post.replies }}<a href="/?post={{ post.id }}" title="reply"><span class="material-symbols-outlined active"> maps_ugc </span></a>
+                {% elif post.status == 'open' %}
+                    {{ post.yea }}<a class="wait" href="/upvote/{{ post.id }}"><span class="material-symbols-outlined active"> arrow_circle_up </span></a>&nbsp;&nbsp; {{ post.nay }}<a class="wait" href="/downvote/{{ post.id }}"><span class="material-symbols-outlined active"> arrow_circle_down </span></a>&nbsp;&nbsp; {{ post.replies }}<a href="/?post={{ post.id }}" title="reply"><span class="material-symbols-outlined active"> maps_ugc </span></a>
+                {% elif post.status == -1 %}
+                    {{ post.yea }}<a href="/upvote/{{ post.id }}"><span class="material-symbols-outlined active"> arrow_circle_up </span></a>&nbsp;&nbsp; {{ post.nay }}<span class="material-symbols-outlined"> arrow_circle_down </span>&nbsp;&nbsp; {{ post.replies }}<a href="/?post={{ post.id }}" title="reply"><span class="material-symbols-outlined active"> maps_ugc </span></a>
+                {% elif post.status == 1 %}
+                    {{ post.yea }}<span class="material-symbols-outlined"> arrow_circle_up </span>&nbsp;&nbsp; {{ post.nay }}<a href="/downvote/{{ post.id }}"><span class="material-symbols-outlined active"> arrow_circle_down </span></a>&nbsp;&nbsp; {{ post.replies }}<a href="/?post={{ post.id }}" title="reply"><span class="material-symbols-outlined active"> maps_ugc </span></a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- post ends -->

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="sidebar">
+	<a href="/" title="back"><span class="sidebarOption material-symbols-outlined"> arrow_back </span></a>
+</div>
+<div class="feed feed__header">
+	<h2>CREATE NEW PROFILE</h2>
+	<div class="postBox field__input">
+		<form action="/create" method="POST">
+			<input placeholder="Name" autocomplete="off" type="text" name="name">
+			<button class="postBox__postButton wait">Create</button>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

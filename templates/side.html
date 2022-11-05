@@ -1,0 +1,43 @@
+<div class="widgets">
+    {% if wallet %}
+        <div class="widgets__input">{{ wallet.address }}</div>
+    {% else %}
+        You are not Connected. <a href="/connect">connect</a>
+    {% endif %}
+
+    {% if user %}
+        <div class="widgets__widgetContainer">
+            <h2>{{ user.name }}</h2>
+            <div class="tbyp-post">@{{ user.handle }} <a href="/edit/{{ user.profileid }}">edit</a> <a class="wait" href="/delete/{{ user.profileid }}">delete</a></div>
+        </div>
+
+        <div class="widgets__widgetContainer">
+        <h2>Followed profiles</h2>
+        {% for followed_profile in user.get_followed_profiles() %}
+            <div class="tbyp-post"><a class="wait" href="/?@={{ followed_profile.handle }}">@{{ followed_profile.handle }}</a> <a class="wait" href="/unfollow/{{ followed_profile.followid }}">unfollow</a></div>
+        {% endfor %}
+        </div>
+
+        <div class="widgets__widgetContainer">
+            <h2>New profiles</h2>
+            {% for new_profile in new_profiles() %}
+                <div class="tbyp-post"><a class="wait" href="/?@={{ new_profile.handle }}">@{{ new_profile.handle }}</a> <a class="wait" href="/follow/{{ new_profile.id }}">follow</a></div>
+            {% endfor %}
+        </div>
+
+        <div class="widgets__widgetContainer">
+            <h2>Popular tags</h2>
+            {% for popular_tag in popular_tags() %}
+                <div class="tbyp-post">{{ loop.index }}. <a class="wait" href="/?H={{ popular_tag.hashtag }}">#{{ popular_tag.hashtag }}</a></div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if wallet %}
+        <a href="{{ config['EXPLORER_URL'] }}" target="_new">
+            <div class="widgets__input" style="display: flex;">
+                <span class="material-symbols-outlined" style="margin-right: 10px;"> paid </span> <span id="balance">TBYP {{ wallet.coin }} ({{ wallet.stake }})</span>
+            </div>
+        </a>
+    {% endif %}
+</div>
