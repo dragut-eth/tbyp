@@ -250,7 +250,14 @@ def explorer():
                     return redirect(f"/?H={handle[0]}")
     fields = main.search(search)
     fields = [str(escape(field)) for field in fields]
-    return render_template("explorer.html", fields=fields, search=search)
+
+    wallet = Wallet(session["wallet"])
+    if session.get("profile"):
+        user = User(wallet, session["profile"])
+    else:
+        user = None
+
+    return render_template("explorer.html", wallet=wallet, user=user, fields=fields, search=search)
 
 @app.route("/logout")
 def logout():

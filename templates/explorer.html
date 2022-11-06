@@ -102,9 +102,14 @@ function autocomplete(inp, arr) {
 {% endblock %}
 
 {% block body %}
-<div class="sidebar">
-	<a href="/" title="back"><span class="sidebarOption material-symbols-outlined"> arrow_back </span></a>
-</div>
+
+<!-- sidebar starts -->
+{% set profile_list = list_user_profiles() %}
+{% with hashtag=True %}
+	{% include 'menu.html' %}
+{% endwith %}
+<!-- sidebar ends -->
+
 <div class="feed feed__header">
 	<h2>SEARCH</h2>
 	<div class="postBox field__input autocomplete">

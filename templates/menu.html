@@ -2,8 +2,8 @@
 <div class="sidebar">
     <a href="/">
       <div class="ethereum_logo"></div>
-      <div class="sidebarOption active">
-        <span class="material-symbols-outlined"> home </span>
+      <div class="sidebarOption">
+        <span class="material-symbols-outlined {%if  not profile and not hashtag %}active{% endif %}"> home </span>
         <h2>Home</h2>
       </div>
     </a>
@@ -11,7 +11,7 @@
     {% if user %}
       <a href="/explorer" class="wait">
         <div class="sidebarOption">
-          <span class="material-symbols-outlined"> search </span>
+          <span class="material-symbols-outlined {%if hashtag %}active{% endif %}"> explore </span>
           <h2>Explore</h2>
         </div>
       </a>
@@ -23,7 +23,7 @@
 
       <a href="/?@={{ user.handle }}" class="wait">
         <div class="sidebarOption">
-          <span class="material-symbols-outlined"> person </span>
+          <span class="material-symbols-outlined {%if profile %}active{% endif %}"> person </span>
           <h2>Profile</h2>
         </div>
       </a>  

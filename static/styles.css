@@ -39,6 +39,11 @@
     padding-right: 20px;
   }
 
+  .sidebar .active{
+    font-variation-settings: 'FILL' 1;
+    color: var(--tbyp-color);
+  }
+
   .sidebarOption:hover {
     color: var(--tbyp-color);
     transition: color 100ms ease-out;
