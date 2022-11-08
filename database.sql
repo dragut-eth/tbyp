@@ -4,7 +4,11 @@ CREATE TABLE post( id SERIAL PRIMARY KEY, profileid INTEGER NOT NULL, datetime D
 CREATE INDEX post_profileid ON post(profileid);
 CREATE INDEX post_replyto ON post(replyto);
 
-CREATE TABLE profile( id SERIAL PRIMARY KEY, address TEXT NOT NULL, datetime DOUBLE PRECISION, handle TEXT NOT NULL, name TEXT NOT NULL );
+CREATE TABLE message( id SERIAL PRIMARY KEY, profileid INTEGER NOT NULL, datetime DOUBLE PRECISION, text TEXT, sender INTEGER NOT NULL, read BOOLEAN DEFAULT FALSE );
+CREATE INDEX message_profileid ON message(profileid);
+CREATE INDEX message_discussion ON message(profileid,sender);
+
+CREATE TABLE profile( id SERIAL PRIMARY KEY, address TEXT NOT NULL, datetime DOUBLE PRECISION, handle TEXT NOT NULL, name TEXT NOT NULL, key TEXT );
 CREATE INDEX profile_address ON profile(address);        
 CREATE UNIQUE INDEX profile_handle ON profile(handle);          
 

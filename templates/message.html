@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+ 
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tweetnacl/1.0.1/nacl-fast.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tweetnacl-util@0.15.1/nacl-util.min.js"></script>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+<script>
+   /**
+   * Encrypt a message.
+   *
+   * @param options - The encryption options.
+   * @param options.publicKey - The public key of the message recipient.
+   * @param options.data - The message data.
+   * @param options.version - The type of encryption to use.
+   * @returns The encrypted data.
+   */
+  function encrypt( publicKey, data, version ) {
+    switch (version) {
+      case 'x25519-xsalsa20-poly1305': {
+        if (typeof data !== 'string') {
+          throw new Error('Message data must be given as a string');
+        }
+        // generate ephemeral keypair
+        const ephemeralKeyPair = nacl.box.keyPair();
+  
+        // assemble encryption parameters - from string to UInt8
+        let pubKeyUInt8Array;
+        try {
+          pubKeyUInt8Array = nacl.util.decodeBase64(publicKey);
+        } catch (err) {
+          throw new Error('Bad public key');
+        }
+  
+        const msgParamsUInt8Array = nacl.util.decodeUTF8(data);
+        const nonce = nacl.randomBytes(nacl.box.nonceLength);
+  
+        // encrypt
+        const encryptedMessage = nacl.box(
+          msgParamsUInt8Array,
+          nonce,
+          pubKeyUInt8Array,
+          ephemeralKeyPair.secretKey,
+        );
+  
+        // handle encrypted data
+        const output = {
+          version: 'x25519-xsalsa20-poly1305',
+          nonce: nacl.util.encodeBase64(nonce),
+          ephemPublicKey: nacl.util.encodeBase64(ephemeralKeyPair.publicKey),
+          ciphertext: nacl.util.encodeBase64(encryptedMessage),
+        };
+        // return encrypted msg data
+        return output;
+      }
+  
+      default:
+        throw new Error('Encryption type/version not supported');
+    }
+  }   
+</script>
+{% endblock %}
+
+{% block body %}
+<script>
+   /* To connect using MetaMask */
+      async function getKey(form) {
+         if (window.ethereum) {
+           key = await window.ethereum.request({ method: "eth_getEncryptionPublicKey", params: ["{{ wallet.address }}"]});
+           form.key.value = key;
+           form.submit();
+         } else {
+           console.log("No wallet");
+        }
+      }
+
+      function encode(form) {
+         cypher = encrypt( '{{ profile.key }}', form.text.value, 'x25519-xsalsa20-poly1305' );
+         form.text.value = ethers.ethers.utils.hexlify(ethers.utils.toUtf8Bytes(JSON.stringify(cypher)));
+         form.submit();
+      }
+
+      // function decode(message) {
+      //    alert(message.childNodes[1].childNodes[0].nodeValue);
+      //    message.childNodes[1].childNodes[0].nodeValue = 'Tagada';
+      // }
+      
+      async function decode(message, messageid=0) {
+         if (window.ethereum) {
+            try{
+               text = await ethereum.request({ method: "eth_decrypt", params: [message.childNodes[1].childNodes[0].nodeValue, "{{ wallet.address }}"]});
+               message.childNodes[1].childNodes[0].nodeValue = text;
+               message.onclick = {};
+               if( messageid > 0 ){
+                  markAsRead(messageid,message.childNodes[1].attributes[1]);
+               }
+            }
+            catch{
+               console.log("do nothing");
+            }
+         } else {
+           console.log("No wallet");
+        }
+      }
+
+      function markAsRead(messageid,attribute) {
+         var xhr = new XMLHttpRequest();
+         xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4){
+               var reponse = JSON.parse(xhr.responseText);
+               if( reponse.success==true ){
+                  attribute.nodeValue="";
+               }
+              }
+         };
+         xhr.open('GET', '/read/'+messageid);
+         xhr.send()
+      }
+
+</script>
+<!-- sidebar starts -->
+{% with profile=None %}
+  {% set message=True %}
+  {% set profile_list = list_user_profiles() %}
+  {% include 'menu.html' %}
+{% endwith %}
+<!-- sidebar ends -->
+
+<!-- feed starts -->
+<div class="feed">
+   {% if user  %}
+      {% if not user.key %}
+      <form action="/message" method="POST">
+         <input type="hidden" name="key">
+         <input class="postBox__postButton" style="width: 200px" type="button" value="Activate" onclick="getKey(this.form);">
+      </form>
+      {% elif profile  and profile.key %}
+         <div class="feed__header">
+            <h2>{{ profile.name }}<h2>
+            @{{ profile.handle }}
+            {% if user.is_followed(profile.id) %}
+               <a class="follow wait" href="/unfollow/{{ profile.id }}">unfollow</a>
+            {% else %}
+               <a class="follow wait" href="/follow/{{ profile.id }}">follow</a>
+            {% endif %}     
+         </div>
+         <div class="postBox">
+            <form action="/message/{{ profile.id }}" method="POST">
+                <div class="postbox__input">
+                    <input type="text" placeholder="Your Message" name="text"/>
+                </div>
+                <div class="postBox__Submit">
+                   <input class="postBox__postButton" style="width: 200px" type="button" value="Send" onclick="encode(this.form);">
+                </div>
+            </form>
+         </div> 
+         {% set discussion = user.discussion(profile.id) %}
+         {% for message in discussion %}
+            {% if message.sender==profile.id %}
+               {% if not message.read %}
+                  <a onclick="decode(this,{{ message.id }})">
+                     <div class="messageme" style="font-weight: 600;">{{ message.text }}</div>
+                  </a>
+               {% else %}
+                  <a onclick="decode(this)">
+                     <div class="messageme">{{ message.text }}</div>
+                  </a>
+               {% endif %}
+            {% else %}
+               <div class="message">{{ message.text }}</div>
+            {% endif %}
+         {% endfor%}
+      {% else %}
+         {% set inbox = user.inbox() %}
+         {% for message in inbox %}
+            <a href="/message/{{ message.sender }}">
+               <div class="post">
+                  <div class="post__avatar">
+                     <div class="default__avatar"></div>
+                  </div>
+                  <div class="inbox">
+                     {% if message.unread > 0 %}
+                        <b>{{ message.name }} @{{ message.handle }} ({{ message.unread }})</b>
+                     {% else %}
+                        {{ message.name }} @{{ message.handle }}
+                     {% endif %}                       
+                  </div>
+               </div>  
+            </a>
+         {% endfor%}
+      {% endif %}     
+   {% endif %}     
+{% endblock %}

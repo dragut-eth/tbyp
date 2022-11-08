@@ -3,7 +3,7 @@
     <a href="/">
       <div class="ethereum_logo"></div>
       <div class="sidebarOption">
-        <span class="material-symbols-outlined {%if  not profile and not hashtag %}active{% endif %}"> home </span>
+        <span class="material-symbols-outlined {%if not message and not profile and not hashtag %}active{% endif %}"> home </span>
         <h2>Home</h2>
       </div>
     </a>
@@ -16,10 +16,13 @@
         </div>
       </a>
 
-      <div class="sidebarOption">
-        <span class="material-symbols-outlined"> notifications_none </span>
-        <h2>Notifications</h2>
-      </div>
+      <a href="/message" class="wait">
+        <div class="sidebarOption" title="Message">
+          <span class="material-symbols-outlined {%if message %}active{% endif %}"> mail </span>
+          <!-- mark_email_unread -->
+          <h2 text="tagada">Messages</h2>
+        </div>
+      </a>
 
       <a href="/?@={{ user.handle }}" class="wait">
         <div class="sidebarOption">

@@ -21,6 +21,7 @@ class User:
             self.id = profile['id']
             self.name = profile['name']
             self.handle = profile['handle']
+            self.key = profile['key']
 
     def onlyOwner(function):
         def wrapper(*args, **kwargs):
@@ -31,6 +32,42 @@ class User:
                 raise Forbidden()
             return function(*args, **kwargs)
         return wrapper
+
+    @onlyOwner
+    def updateKey(self, key):
+        if len(key) > 32:
+            execute("UPDATE profile SET key=%(key)s WHERE id=%(profileid)s AND address=%(address)s", {'key': key, 'profileid': self.profileid, 'address': self.wallet.address})
+            commit()
+            self.key = key
+            return True
+        return False
+
+    @onlyOwner
+    def sendMessage(self, text, profileid):
+        if len(text) > 0:
+            now = datetime.now()
+            execute("INSERT INTO message (datetime, profileid, text, sender) VALUES (%(datetime)s, %(profileid)s, %(text)s, %(sender)s)", {'datetime': now.strftime("%Y%m%d%H%M.%S"), 'profileid': profileid, 'text': text, 'sender': self.profileid})
+            commit()
+            return True
+        return False
+
+    @onlyOwner
+    def readMessage(self, messageid):
+        execute("UPDATE message SET read=TRUE WHERE id=%(messageid)s AND profileid=%(profileid)s", {'messageid': messageid, 'profileid': self.profileid})
+        commit()
+        return True
+
+    @onlyOwner
+    def discussion(self, profileid):
+        execute("SELECT * FROM (SELECT * FROM message WHERE profileid=%(profileid)s AND sender=%(senderid)s LIMIT 25) AS a UNION SELECT * FROM (SELECT * FROM message WHERE profileid=%(senderid)s AND sender=%(profileid)s LIMIT 25) AS b ORDER BY datetime DESC", {'profileid': self.profileid, 'senderid': profileid})
+        row = fetchall()
+        return row
+
+    @onlyOwner
+    def inbox(self):
+        execute("SELECT sender,profile.name,profile.handle,COUNT(read) FILTER (WHERE read=FALSE) AS unread,MAX(message.datetime) AS date FROM message INNER JOIN profile ON profile.id=sender WHERE profileid=%(profileid)s GROUP BY sender,profile.name,profile,handle ORDER BY date DESC", {'profileid': self.profileid})
+        row = fetchall()
+        return row
 
     @onlyOwner
     def writePost(self, post, replyto=None):

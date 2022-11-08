@@ -3,7 +3,7 @@ from eth_account.messages import encode_defunct
 import re
 import secrets
 from os import environ as config
-from flask import Flask, render_template, redirect, request, session, url_for, abort, send_from_directory, flash, escape
+from flask import Flask, render_template, redirect, request, session, url_for, abort, send_from_directory, flash, escape, jsonify
 from flask_session import Session
 from werkzeug.exceptions import HTTPException
 from wallet import Wallet
@@ -258,6 +258,39 @@ def explorer():
         user = None
 
     return render_template("explorer.html", wallet=wallet, user=user, fields=fields, search=search)
+
+@app.route("/read/<int:messageid>")
+def read(messageid):
+    wallet = Wallet(session["wallet"])
+    if session.get("profile"):
+        user = User(wallet, session["profile"])
+        if user.readMessage(messageid):
+            return jsonify({'success':True}), 200, {'ContentType':'application/json'}
+
+    return jsonify({'success':False}), 200, {'ContentType':'application/json'}
+
+
+@app.route("/message/<int:profileid>", methods=["POST", "GET"])
+@app.route("/message", methods=["POST", "GET"])
+def message(profileid=None):
+    wallet = Wallet(session["wallet"])
+    if session.get("profile"):
+        user = User(wallet, session["profile"])
+    else:
+        abort(403)
+
+    if request.method == "POST":
+        if key:=request.form.get("key"):
+            user.updateKey(key)
+        elif  text:=request.form.get("text"):
+            user.sendMessage(text, profileid)
+
+    if profileid:
+        profile = main.get_profile(profileid)
+    else:
+        profile = None
+
+    return render_template("message.html", wallet=wallet, user=user, profile=profile)
 
 @app.route("/logout")
 def logout():

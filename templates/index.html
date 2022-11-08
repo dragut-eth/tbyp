@@ -63,21 +63,18 @@
       {% elif profile  %}
          <div class="feed__header">
             <h2>{{ profile.name }}<h2>
-            @{{ profile.handle }}
-            {% if user  %}
-               {% if user.is_followed(profile.id) %}
-                  <a class="follow wait" href="/unfollow/{{ profile.id }}">unfollow</a>
-               {% else %}
-                  <a class="follow wait" href="/follow/{{ profile.id }}">follow</a>
-               {% endif %}     
-               {% if user.profileid == profile.id%}
-                  <a class="follow" style="margin-right: 5px;" href="/edit/{{ user.profileid }}">edit</a>
-               {% endif %}     
+            @{{ profile.handle }} {% if profile.key %}<a href="/message/{{ profile.id }}"><span class="material-symbols-outlined"> mail </span></a>{% endif %}
+            {% if user.is_followed(profile.id) %}
+               <a class="follow wait" href="/unfollow/{{ profile.id }}">unfollow</a>
+            {% else %}
+               <a class="follow wait" href="/follow/{{ profile.id }}">follow</a>
+            {% endif %}     
+            {% if user.profileid == profile.id%}
+               <a class="follow" style="margin-right: 5px;" href="/edit/{{ user.profileid }}">edit</a>
             {% endif %}     
          </div>
          {% set feed = feed(profile.id) %}
          {% include 'feed.html' %}
-         <!-- <embed width="100%" height="100%" src="feed?profile={{ profile.id }}"/> -->
       {% elif hashtag %}
          <div class="feed__header">
             <h2>#{{ hashtag.hashtag }}</h2>

@@ -8,7 +8,7 @@ from search import search_users
 POST_REWARD = 0.1 # 10% reward
 
 def get_profile(id):
-    execute("SELECT id,handle,name FROM profile WHERE id=%s", (id,))
+    execute("SELECT id,handle,name,key FROM profile WHERE id=%s", (id,))
     row = fetchone()
     if row == None:
         return False
