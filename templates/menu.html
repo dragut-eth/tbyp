@@ -3,7 +3,7 @@
     <a href="/">
       <div class="ethereum_logo"></div>
       <div class="sidebarOption">
-        <span class="material-symbols-outlined {%if not message and not profile and not hashtag %}active{% endif %}"> home </span>
+        <span class="material-symbols-outlined {% if not message and not profile and not hashtag %}active{% endif %}"> home </span>
         <h2>Home</h2>
       </div>
     </a>
@@ -11,15 +11,14 @@
     {% if user %}
       <a href="/explorer" class="wait">
         <div class="sidebarOption">
-          <span class="material-symbols-outlined {%if hashtag %}active{% endif %}"> explore </span>
+          <span class="material-symbols-outlined {% if hashtag %}active{% endif %}"> explore </span>
           <h2>Explore</h2>
         </div>
       </a>
 
       <a href="/message" class="wait">
         <div class="sidebarOption" title="Message">
-          <span class="material-symbols-outlined {%if message %}active{% endif %}"> mail </span>
-          <!-- mark_email_unread -->
+          <span class="material-symbols-outlined {% if message %}active{% endif %}">{% if user.get_unread_message_count() %}mark_email_unread{% else %}mail{% endif %}</span>
           <h2 text="tagada">Messages</h2>
         </div>
       </a>
@@ -34,8 +33,8 @@
 
     {% if wallet %}
     <div id="switch_profile" class="dropdown-content">
-        {% for profile in profile_list %}
-            <a href="?profile={{ profile.id }}" class="wait">@{{ profile.handle }}</a>
+        {% for profile in list_user_profiles() %}
+            <a href="/?profile={{ profile.id }}" class="wait">@{{ profile.handle }}</a>
         {% endfor %}
     </div>
     {% endif %}

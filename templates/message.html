@@ -120,7 +120,6 @@
 <!-- sidebar starts -->
 {% with profile=None %}
   {% set message=True %}
-  {% set profile_list = list_user_profiles() %}
   {% include 'menu.html' %}
 {% endwith %}
 <!-- sidebar ends -->
@@ -166,11 +165,23 @@
                   </a>
                {% endif %}
             {% else %}
-               <div class="message">{{ message.text }}</div>
+               <div style="position: relative;">
+                  <div class="material-symbols-outlined message__read"> {% if message.read %}drafts{% else %}email{% endif %}</div>
+                  <div class="message">
+                  {{ message.text }}
+                  </div>
+               </div>
             {% endif %}
          {% endfor%}
       {% else %}
          {% set inbox = user.inbox() %}
+         <div class="feed__header">
+            {% if not inbox %}
+               <h2>Inbox Empty</h2>
+            {% else %}
+               <h2>Inbox</h2>
+            {% endif %}
+         </div>
          {% for message in inbox %}
             <a href="/message/{{ message.sender }}">
                <div class="post">

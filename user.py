@@ -233,6 +233,14 @@ class User:
         commit()
         return True
 
+    @onlyOwner
+    def get_unread_message_count(self):
+        execute("SELECT COUNT(*) AS count FROM message WHERE profileid=%(profileid)s AND read=FALSE", {'profileid': self.profileid})
+        row = fetchone()
+        if row['count'] > 0:
+            return row['count']
+        return False
+
     def get_followed_profiles(self):
         execute("SELECT profile.id AS followid,handle,name FROM follow INNER JOIN profile ON profile.id=follow.followid WHERE follow.profileid=%(profileid)s ORDER BY name DESC", {'profileid': self.profileid})
         rows = fetchall()
