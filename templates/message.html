@@ -85,6 +85,7 @@
       // }
       
       async function decode(message, messageid=0) {
+         alert( message.childNodes[1].childNodes[0].nodeValue );
          if (window.ethereum) {
             try{
                text = await window.ethereum.request({ method: "eth_decrypt", params: [message.childNodes[1].childNodes[0].nodeValue, "{{ wallet.address }}"]});
