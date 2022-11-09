@@ -87,7 +87,7 @@
       async function decode(message, messageid=0) {
          if (window.ethereum) {
             try{
-               text = await ethereum.request({ method: "eth_decrypt", params: [message.childNodes[1].childNodes[0].nodeValue, "{{ wallet.address }}"]});
+               text = await window.ethereum.request({ method: "eth_decrypt", params: [message.childNodes[1].childNodes[0].nodeValue, "{{ wallet.address }}"]});
                message.childNodes[1].childNodes[0].nodeValue = text;
                message.onclick = {};
                if( messageid > 0 ){

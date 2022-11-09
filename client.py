@@ -237,6 +237,9 @@ def unfollow(followid):
 
 @app.route("/explorer", methods=["POST", "GET"])
 def explorer():
+    if not session.get("wallet"):
+        return redirect("/connect")
+    
     search = ""
     if request.method == "POST":
         if search:=request.form.get("search"):
@@ -261,8 +264,8 @@ def explorer():
 
 @app.route("/read/<int:messageid>")
 def read(messageid):
-    wallet = Wallet(session["wallet"])
-    if session.get("profile"):
+    if session["wallet"] and session["profile"]:
+        wallet = Wallet(session["wallet"])
         user = User(wallet, session["profile"])
         if user.readMessage(messageid):
             return jsonify({'success':True}), 200, {'ContentType':'application/json'}
@@ -273,6 +276,9 @@ def read(messageid):
 @app.route("/message/<int:profileid>", methods=["POST", "GET"])
 @app.route("/message", methods=["POST", "GET"])
 def message(profileid=None):
+    if not session.get("wallet"):
+        return redirect("/connect")
+
     wallet = Wallet(session["wallet"])
     if session.get("profile"):
         user = User(wallet, session["profile"])
