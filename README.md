@@ -8,6 +8,7 @@ Think Before You Post
 Test this project on https://tbyp.herokuapp.com/
 
 ERC-20 Token can used as a self moderation tools
+
 Rules:
 - First time user => +100 Token
 - Create a new profile => -50 Token
