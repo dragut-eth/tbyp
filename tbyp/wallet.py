@@ -1,5 +1,5 @@
-from database import execute, fetchone, commit, rowcount
-import main
+from .database import execute, fetchone, commit, rowcount
+from . import main
 
 INITIAL_VALUE = 100
 NEW_ACCOUNT_PRICE = 50

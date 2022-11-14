@@ -3,8 +3,8 @@ import re
 from datetime import datetime, timedelta
 from werkzeug.exceptions import Forbidden
 
-from database import execute, fetchone, commit, rowcount, fetchall
-import main
+from .database import execute, fetchone, commit, rowcount, fetchall
+from . import main
 
 FOLLOW_PROFILE_PRICE = 1
 POST_PRICE = 1

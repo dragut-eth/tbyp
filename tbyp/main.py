@@ -1,9 +1,9 @@
 from random import randint
 from datetime import datetime, timedelta
 
-import wallet
-from database import execute, fetchone, commit, rowcount, fetchall
-from search import search_users
+import tbyp
+from .database import execute, fetchone, commit, rowcount, fetchall
+from .search import search_users
 
 POST_REWARD = 0.1 # 10% reward
 
@@ -142,7 +142,7 @@ def _reward(profileid, postid, stake):
         commit()
         if rowcount() > 0:
             wallet_address = get_profile_address(profileid)
-            reward_wallet = wallet.Wallet(wallet_address)
+            reward_wallet = tbyp.Wallet(wallet_address)
             reward_wallet.unlock(stake,stake*POST_REWARD)
 
 def _date(post):

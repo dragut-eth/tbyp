@@ -1,4 +1,4 @@
-from database import execute, fetchall
+from .database import execute, fetchall
 
 def dict_factory(row):
     return row['field']

@@ -6,10 +6,7 @@ from os import environ as config
 from flask import Flask, render_template, redirect, request, session, url_for, abort, send_from_directory, flash, escape, jsonify
 from flask_session import Session
 from werkzeug.exceptions import HTTPException
-from wallet import Wallet
-from user import User
-import main
-import database
+from tbyp import Wallet, User, main, tytb_initialize
 
 SIGNING_MESSAGE = "Sign this message to prove that you have access to this wallet and log in. This won’t cost you anything."
 
@@ -18,7 +15,7 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = "filesystem"
 Session(app)
 
-database.initialize() 
+tytb_initialize() 
 
 @app.route("/")
 def index():

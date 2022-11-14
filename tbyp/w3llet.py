@@ -3,7 +3,7 @@ from time import sleep
 from web3 import Web3
 from web3.middleware import geth_poa_middleware, construct_sign_and_send_raw_middleware
 
-import main
+from . import main
 
 INITIAL_AMOUNT = 100
 NEW_ACCOUNT_PRICE = 50
